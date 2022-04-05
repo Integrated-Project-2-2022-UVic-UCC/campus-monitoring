@@ -9,8 +9,8 @@
   copies or substantial portions of the Software.
 *********/
 
-const int trigPin = 12;
-const int echoPin = 14;
+const int trigPin = D6;
+const int echoPin = D5;
 
 //define sound velocity in cm/uS
 #define SOUND_VELOCITY 0.034
@@ -45,6 +45,7 @@ void loop() {
   distanceInch = distanceCm * CM_TO_INCH;
   
   // Prints the distance on the Serial Monitor
+  Serial.print(duration);
   Serial.print("Distance (cm): ");
   Serial.println(distanceCm);
   Serial.print("Distance (inch): ");
