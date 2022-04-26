@@ -21,16 +21,15 @@ byte max_intentos = 50;
 int Humitat = A0;
 int H;
 
-
-time_t  DateTime.now();
-String  DateTime.toString();
+String data = DateTime.toString();
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  setupDateTime();
   Serial.println("\n");
-
+  Serial.println(data);
   //Conexio WiFi
   WiFi.begin(ssid, password);
   Serial.println("Conectant ");
@@ -70,7 +69,6 @@ void loop() {
 
       // Specify content-type header
       http.addHeader("Content-Type", "application/json");       
-      Serial.print(datetime);
       int httpResponseCode = http.POST("{\"timestamp\":\"tPmAT5Ab3j7F9\",\"sensorID\":\"1\",\"var1\":\"24.25\",\"var2\":\"49.54\",\"var3\":\"1005.14\"\"var4\":\"24.25\",\"var5\":\"49.54\",\"var6\":\"1005.14\"\"var7\":\"24.25\"}");
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
