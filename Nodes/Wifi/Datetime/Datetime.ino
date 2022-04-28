@@ -1,6 +1,6 @@
 #include <ESPDateTime.h>
-String h;
-
+String h = DateTime.toString();
+int Humitat = A0;
 
 
 void setup() {
@@ -10,21 +10,29 @@ void setup() {
   //Serial.println(DateTime.now());
   Serial.println("--------------------");
   Serial.println(DateTime.toString());
-  h = DateTime.toString();
   Serial.println(h);
   //Serial.println(DateTime.toISOString());
   //Serial.println(DateTime.toUTCString());
-  Serial.println("--------------------");
   //Serial.println(DateTime.format(DateFormatter::COMPAT));
   //Serial.println(DateTime.format(DateFormatter::DATE_ONLY));
   //Serial.println(DateTime.format(DateFormatter::TIME_ONLY));
-  Serial.println("--------------------");
   //DateTimeParts p = DateTime.getParts();
   Serial.println("--------------------");
+  Serial.println("{\"timestamp\":\"2020-04-26T08:45:12\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}");
+  Serial.println("--------------------");
+  Serial.println("{\"timestamp\":\"" +h+"\",\"sensorID\":2\,\"var1\":24.25}");
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.print("Valor humitat del sol: ");
+  Serial.println(analogRead(Humitat));
+
+  Serial.println("--------------------");
+  Serial.println("{\"timestamp\":\"2020-04-26T08:45:12\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}");
+  Serial.println("--------------------");
+  Serial.println("{\"timestamp\":\"" +h+"\",\"sensorID\":2\,\"var1\":\""+Humitat+"\"}");
+  delay(5000);
 }
 void setupDateTime() {
   // setup this after wifi connected
