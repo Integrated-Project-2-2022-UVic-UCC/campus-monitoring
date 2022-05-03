@@ -18,3 +18,13 @@ def monitoring_data(request):
         monitoring_serializer.save()
         return JsonResponse(monitoring_serializer.data, safe=False)
     return JsonResponse(monitoring_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(['POST'])
+# def maquina_list(request):
+#     maquina_data = JSONParser().parse(request)
+#     productividad_serializer = ProductividadSerializer(data=maquina_data)
+#     if productividad_serializer.is_valid():
+#         print('guai')
+#         productividad_serializer.save()
+#         return JsonResponse(productividad_serializer.data, safe=False)
+#     return JsonResponse(productividad_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
