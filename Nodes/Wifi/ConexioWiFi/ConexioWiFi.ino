@@ -1,9 +1,20 @@
 #include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <Arduino_JSON.h>
 #include <ESPDateTime.h>
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "192.168.0.100");
+
+//Week Days
+String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+//Month names
+String months[12]={"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 const char* ssid = "PlacidoBravo";
 const char* password = "123456789";
@@ -20,21 +31,47 @@ byte max_intentos = 50;
 int Humitat = A0;
 int H;
 
-String data = DateTime.toString();
-
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  setupDateTime();
-  Serial.println("\n");
-  Serial.println(data);
+  Serial.println("-----------------------------");
   ConexioServer();
-  showTime();
+  // Initialize a NTPClient to get time
+  timeClient.begin();
+  // Set offset time in seconds to adjust for your timezone, for example:
+  // GMT +1 = 3600
+  // GMT +8 = 28800
+  // GMT -1 = -3600
+  // GMT 0 = 0
+  timeClient.setTimeOffset(0);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //Codi per agafar la data del servidor-------------------
+  timeClient.update();
+  time_t epochTime = timeClient.getEpochTime();
+  String formattedTime = timeClient.getFormattedTime();
+  Serial.print("Formatted Time: ");
+  Serial.println(formattedTime);  
+
+  int currentHour = timeClient.getHours();
+  int currentMinute = timeClient.getMinutes();
+  int currentSecond = timeClient.getSeconds();
+  String weekDay = weekDays[timeClient.getDay()];
+  //Get a time structure
+  struct tm *ptm = gmtime ((time_t *)&epochTime); 
+  int monthDay = ptm->tm_mday;
+  int currentMonth = ptm->tm_mon+1;
+  String currentMonthName = months[currentMonth-1];
+  int currentYear = ptm->tm_year+1900;
+
+  //Print complete date:
+  String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay) + "T" + String(formattedTime);
+  Serial.print("Current date: ");
+  Serial.println(currentDate);
+  
+  //--------------------------------------------------------------------
+  
   if ((millis() - lastTime) > timerDelay){
     Serial.println("--------------------");
     if(WiFi.status()==WL_CONNECTED){
@@ -43,9 +80,10 @@ void loop() {
 
       http.begin(client, serverName);
       
-      // Specify content-type header
-      http.addHeader("Content-Type", "application/json");       
-      int httpResponseCode = http.POST("{\"timestamp\":\"2020-04-26T08:45:12\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}");
+      
+      http.addHeader("Content-Type", "application/json");
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
+      int httpResponseCode = http.POST(httpRequestData);
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
         
@@ -59,19 +97,6 @@ void loop() {
   }
 }
 
-void setupDateTime() {
-  // setup this after wifi connected
-  // you can use custom timeZone,server and timeout
-  DateTime.setServer("http://192.168.0.100:8080/api/monitoring");
-  DateTime.setTimeZone("CST-8");
-  DateTime.begin();
-  if (!DateTime.isTimeValid()) {
-    Serial.println("Failed to get time from server.");
-  } else {
-    Serial.printf("Date Now is %s\n", DateTime.toISOString().c_str());
-    Serial.printf("Timestamp is %ld\n", DateTime.now());
-  }
-}
 void ConexioServer(){
   WiFi.begin(ssid, password);
   Serial.println("Conectant ");
