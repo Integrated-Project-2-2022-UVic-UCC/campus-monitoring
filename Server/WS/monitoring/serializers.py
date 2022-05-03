@@ -3,6 +3,7 @@ from monitoring.models import Monitoring
 
 class MonitoringSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Monitoring
         fields = ('id',
                   'timestamp',
                   'sensorID',
