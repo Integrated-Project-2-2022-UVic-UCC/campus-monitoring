@@ -1,13 +1,3 @@
-/*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files.
-  
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-*/
 
 #include <ESP8266WiFi.h>
 #include <NTPClient.h>
@@ -52,56 +42,26 @@ void setup() {
 
 void loop() {
   timeClient.update();
-
   time_t epochTime = timeClient.getEpochTime();
-  Serial.print("Epoch Time: ");
-  Serial.println(epochTime);
-  
   String formattedTime = timeClient.getFormattedTime();
   Serial.print("Formatted Time: ");
   Serial.println(formattedTime);  
 
   int currentHour = timeClient.getHours();
-  Serial.print("Hour: ");
-  Serial.println(currentHour);  
-
   int currentMinute = timeClient.getMinutes();
-  Serial.print("Minutes: ");
-  Serial.println(currentMinute); 
-   
   int currentSecond = timeClient.getSeconds();
-  Serial.print("Seconds: ");
-  Serial.println(currentSecond);  
-
   String weekDay = weekDays[timeClient.getDay()];
-  Serial.print("Week Day: ");
-  Serial.println(weekDay);    
-
   //Get a time structure
   struct tm *ptm = gmtime ((time_t *)&epochTime); 
-
   int monthDay = ptm->tm_mday;
-  Serial.print("Month day: ");
-  Serial.println(monthDay);
-
   int currentMonth = ptm->tm_mon+1;
-  Serial.print("Month: ");
-  Serial.println(currentMonth);
-
   String currentMonthName = months[currentMonth-1];
-  Serial.print("Month name: ");
-  Serial.println(currentMonthName);
-
   int currentYear = ptm->tm_year+1900;
-  Serial.print("Year: ");
-  Serial.println(currentYear);
 
   //Print complete date:
-  String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay);
+  String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay) + "T" + String(formattedTime);
   Serial.print("Current date: ");
   Serial.println(currentDate);
 
-  Serial.println("");
-
-  delay(2000);
+  delay(1000);
 }
