@@ -51,9 +51,6 @@ void loop() {
   timeClient.update();
   time_t epochTime = timeClient.getEpochTime();
   String formattedTime = timeClient.getFormattedTime();
-  Serial.print("Formatted Time: ");
-  Serial.println(formattedTime);  
-
   int currentHour = timeClient.getHours();
   int currentMinute = timeClient.getMinutes();
   int currentSecond = timeClient.getSeconds();
@@ -84,6 +81,7 @@ void loop() {
       http.addHeader("Content-Type", "application/json");
       String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
       int httpResponseCode = http.POST(httpRequestData);
+      Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
         
@@ -95,6 +93,7 @@ void loop() {
     }
     lastTime = millis();
   }
+  delay(1000);
 }
 
 void ConexioServer(){
