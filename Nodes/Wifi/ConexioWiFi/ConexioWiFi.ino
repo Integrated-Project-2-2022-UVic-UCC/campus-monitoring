@@ -1,4 +1,4 @@
-
+#include <NTPClient.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
@@ -11,7 +11,6 @@ const char* password = "123456789";
 const char* serverName = "http://192.168.0.100:8080/api/monitoring";
 
 unsigned long lastTime = 0;
-
 unsigned long timerDelay = 5000;
 
 byte cont = 0;
@@ -30,37 +29,14 @@ void setup() {
   setupDateTime();
   Serial.println("\n");
   Serial.println(data);
-  //Conexio WiFi
-  WiFi.begin(ssid, password);
-  Serial.println("Conectant ");
-  while (WiFi.status() != WL_CONNECTED and cont < max_intentos){
-    cont++; //Conta fins a 50
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-
-  if (cont < max_intentos){
-    Serial.println("*****************************************");
-    Serial.print("Contectat a la red WiFi: ");
-    Serial.println(WiFi.SSID());
-    Serial.print("IP: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("macAdress: ");
-    Serial.println(WiFi.macAddress());
-    Serial.println("*****************************************");
-  }
-  else {
-    Serial.println("-----------------------------------------");
-    Serial.print("No s'ha pogut conectar");
-    Serial.println("-----------------------------------------");
-    
-  }
+  ConexioServer();
+  showTime();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if ((millis() - lastTime) > timerDelay){
+    Serial.println("--------------------");
     if(WiFi.status()==WL_CONNECTED){
       WiFiClient client;
       HTTPClient http;
@@ -94,5 +70,32 @@ void setupDateTime() {
   } else {
     Serial.printf("Date Now is %s\n", DateTime.toISOString().c_str());
     Serial.printf("Timestamp is %ld\n", DateTime.now());
+  }
+}
+void ConexioServer(){
+  WiFi.begin(ssid, password);
+  Serial.println("Conectant ");
+  while (WiFi.status() != WL_CONNECTED and cont < max_intentos){
+    cont++; //Conta fins a 50
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+
+  if (cont < max_intentos){
+    Serial.println("*****************************************");
+    Serial.print("Contectat a la red WiFi: ");
+    Serial.println(WiFi.SSID());
+    Serial.print("IP: ");
+    Serial.println(WiFi.localIP());
+    Serial.print("macAdress: ");
+    Serial.println(WiFi.macAddress());
+    Serial.println("*****************************************");
+  }
+  else {
+    Serial.println("-----------------------------------------");
+    Serial.print("No s'ha pogut conectar");
+    Serial.println("-----------------------------------------");
+    
   }
 }
