@@ -4,7 +4,6 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <Arduino_JSON.h>
-#include <ESPDateTime.h>
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -59,11 +58,10 @@ void loop() {
   struct tm *ptm = gmtime ((time_t *)&epochTime); 
   int monthDay = ptm->tm_mday;
   int currentMonth = ptm->tm_mon+1;
-  String currentMonthName = months[currentMonth-1];
   int currentYear = ptm->tm_year+1900;
 
   //Print complete date:
-  String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay) + "T" + String(formattedTime);
+  String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay) + "T" + String(formattedTime); 
   Serial.print("Current date: ");
   Serial.println(currentDate);
   
