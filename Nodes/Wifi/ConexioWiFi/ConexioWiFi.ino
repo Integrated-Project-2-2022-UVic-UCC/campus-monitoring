@@ -23,6 +23,8 @@ const char* serverName = "http://192.168.0.100:8080/api/monitoring";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
 
+int H = 1024;
+
 byte cont = 0;
 byte max_intentos = 50;
 
@@ -77,7 +79,7 @@ void loop() {
       
       
       http.addHeader("Content-Type", "application/json");
-      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":2,\"var1\":24.25,\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":2,\"var1\":\"" + H + "\",\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
       int httpResponseCode = http.POST(httpRequestData);
       Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
