@@ -55,14 +55,10 @@ void loop(){
   Serial.print("humidity (unit percent):    "); Serial.println(humi);
   Serial.println("========  end print  ========");
 
-  delay(1000);
-
-  if(CCS811.checkDataReady() == true){
+    if(CCS811.checkDataReady() == true){
         Serial.print("CO2: ");
         Serial.print(CCS811.getCO2PPM());
-        Serial.print("ppm, TVOC: ");
-        Serial.print(CCS811.getTVOCPPB());
-        Serial.println("ppb");
+        Serial.print("ppm");
 
     } else {
         Serial.println("Data is not ready!");
@@ -73,5 +69,6 @@ void loop(){
      */
   CCS811.writeBaseLine(0x447B);
     //delay cannot be less than measurement cycle
+  
   delay(1000);
 } 
