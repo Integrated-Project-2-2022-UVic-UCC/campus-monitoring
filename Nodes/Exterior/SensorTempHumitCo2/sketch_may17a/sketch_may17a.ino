@@ -35,11 +35,10 @@ void setup(){
   delay(100);
 
   while(CCS811.begin() != 0){
-        Serial.println("failed to init chip, please check if the chip connection is fine");
-        delay(1000);
+    Serial.println("failed to init chip, please check if the chip connection is fine");
+    delay(1000);
 }
 }
-
 void loop(){
 
   float   temp = bme.getTemperature();
