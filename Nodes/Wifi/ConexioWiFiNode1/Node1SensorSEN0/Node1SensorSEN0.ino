@@ -8,7 +8,7 @@
 #include "Wire.h"
 #include "DFRobot_CCS811.h"
 
-//Sensor CO2
+//Sensor CO2, temp, humit, presio
 DFRobot_CCS811 CCS811;
 typedef DFRobot_BME280_IIC    BME;
 BME   bme(&Wire, 0x76);
@@ -31,8 +31,10 @@ unsigned long timerDelay = 5000;
 byte cont = 0;
 byte max_intentos = 50;
 
-/*void ConexioServer(){
+//Function to conect ESP to the server
+void ConexioServer(){
   WiFi.begin(ssid, password);
+  //Initialize conexion to server
   Serial.println("Conectant ");
   while (WiFi.status() != WL_CONNECTED and cont < max_intentos){
     cont++; //Conta fins a 50
@@ -57,7 +59,8 @@ byte max_intentos = 50;
     Serial.println("-----------------------------------------");
     
   }
-}*/
+}
+//Print function for bme280 and ccs811
 void printLastOperateStatus(BME::eStatus_t eStatus)
 {
   switch(eStatus) {
@@ -69,10 +72,9 @@ void printLastOperateStatus(BME::eStatus_t eStatus)
   }
 }
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
-  //ConexioServer();
-  //Sensor BME (Temp,Humit,Altitud,pression)
+  ConexioServer();
+  //Sensor BME280 (Temp,Humit,Altitud,pression)
   bme.reset();
   Serial.println("bme read data test");
   while(bme.begin() != BME::eStatusOK) {
@@ -82,18 +84,15 @@ void setup() {
   }
   Serial.println("bme begin success");
   delay(100);
-  //Sensor CCS811 CO2
-  while(CCS811.begin() != 0){
-        Serial.println("failed to init chip, please check if the chip connection is fine");
-        delay(1000);
 
   timeClient.begin();
   timeClient.setTimeOffset(0);
-}
+  delay(1000);
 }
 
+
 void loop() {
-  /*   //Codi per agafar la data del servidor-------------------
+  //Codi per agafar la data del servidor-------------------
   timeClient.update();
   time_t epochTime = timeClient.getEpochTime();
   String formattedTime = timeClient.getFormattedTime();
@@ -135,9 +134,7 @@ void loop() {
         Serial.println("Data is not ready!");
     }
   CCS811.writeBaseLine(0x447B);
-    /*
   //--------------------------------------------------------------------
-  
   if ((millis() - lastTime) > timerDelay){
     Serial.println("--------------------");
     if(WiFi.status()==WL_CONNECTED){
@@ -145,22 +142,19 @@ void loop() {
       HTTPClient http;
 
       http.begin(client, serverName);
-      
-      
       http.addHeader("Content-Type", "application/json");
-      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":1,\"var1\":12,\"var2\":"+ temp +",\"var3\":"+ press +",\"var4\":"+ alti +",\"var5\":"+ humi +",\"var6\":"+ CO2 +",\"var7\":24.25}";
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":1,\"var1\":12,\"var2\":"+ temp +",\"var3\":"+ press/1000 +",\"var4\":"+ alti +",\"var5\":"+ humi +",\"var6\":"+ CO2/1000 +",\"var7\":24.25}";
       int httpResponseCode = http.POST(httpRequestData);
       Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
-        
-      // Free resources
+      
       http.end();
     }
     else {
       Serial.println("WiFi Disconnected");
     }
     lastTime = millis();
-  }*/
+  }
   delay(1000);
 }

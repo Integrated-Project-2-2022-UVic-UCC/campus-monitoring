@@ -4,16 +4,7 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <Arduino_JSON.h>
-#include "DFRobot_BME280.h"
-#include "Wire.h"
-#include "DFRobot_CCS811.h"
-//Sensor bme280 and ccs
-DFRobot_CCS811 CCS811;
-typedef DFRobot_BME280_IIC    BME;    // ******** use abbreviations instead of full names ********
-BME   bme(&Wire, 0x76);   // select TwoWire peripheral and set sensor address
-#define SEA_LEVEL_PRESSURE    1015.0f
-//Sensor Humitat ground
-int Humitat = A0;
+
 // Define NTP Client to get time ------------------------------
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "192.168.0.100");
@@ -30,17 +21,15 @@ unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
 byte cont = 0;
 byte max_intentos = 50;
+//---------------------------------------------------------------
+//Define var HC-SR04---------------------------------------------
+const int trigPin = D6;
+const int echoPin = D5;
+//define sound velocity in cm/uS
+#define SOUND_VELOCITY 0.034
+long duration;
+float distanceCm;
 //-----------------------------------------------------------------
-void printLastOperateStatus(BME::eStatus_t eStatus)
-{
-  switch(eStatus) {
-  case BME::eStatusOK:    Serial.println("everything ok"); break;
-  case BME::eStatusErr:   Serial.println("unknow error"); break;
-  case BME::eStatusErrDeviceNotDetected:    Serial.println("device not detected"); break;
-  case BME::eStatusErrParameter:    Serial.println("parameter error"); break;
-  default: Serial.println("unknow status"); break;
-  }
-}
 void setup() {
   
   Serial.begin(115200);
@@ -50,47 +39,30 @@ void setup() {
   // Initialize a NTPClient to get time
   timeClient.begin();
   timeClient.setTimeOffset(0);
-  //Serial begin sensor C02
-  bme.reset();
-  Serial.println("bme read data test");
-  while(bme.begin() != BME::eStatusOK) {
-    Serial.println("bme begin faild");
-    printLastOperateStatus(bme.lastOperateStatus);
-    delay(2000);
-  }
-  Serial.println("bme begin success");
-  delay(100);
 
+  //Void setup for HC-SR04
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 }
 
 void loop() {
-  //Void loop for ground Humidity Sensor---------------------
-  Serial.print("Valor humitat del sol: ");
-  Serial.println(analogRead(Humitat));
-  //Get variables of sensor Co2 (bme280 and ccs)
-  float   temp = bme.getTemperature();
-  uint32_t    press = bme.getPressure();
-  float   alti = bme.calAltitude(SEA_LEVEL_PRESSURE, press);
-  float   humi = bme.getHumidity();
-  float   Co2 = CCS811.getCO2PPM();
+  //Void loop for HC-SR04 proximity sensor-------------------------
+  // Clears the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
   
-  Serial.println();
-  Serial.println("======== start print ========");
-  Serial.print("temperature (unit Celsius): "); Serial.println(temp);
-  Serial.print("pressure (unit pa):         "); Serial.println(press);
-  Serial.print("altitude (unit meter):      "); Serial.println(alti);
-  Serial.print("humidity (unit percent):    "); Serial.println(humi);
-  Serial.println("========  end print  ========");
-
-    if(CCS811.checkDataReady() == true){
-        Serial.print("CO2: ");
-        Serial.print(Co2);
-        Serial.print("ppm");
-
-    } else {
-        Serial.println("Data is not ready!");
-    }
-  CCS811.writeBaseLine(0x447B);
+  // Calculate the distance
+  distanceCm = duration * SOUND_VELOCITY/2;
+  // Prints the distance on the Serial Monitor
+  Serial.print(duration);
+  Serial.print("Distance (cm): ");
+  Serial.println(distanceCm);
   
   //Get time and data from server-------------------
   timeClient.update();
@@ -122,7 +94,7 @@ void loop() {
       
       
       http.addHeader("Content-Type", "application/json");
-      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":2,\"var1\":" + Humitat + ",\"var2\":" + temp + ",\"var3\":"+ press/1000 +",\"var4\":"+ alti +",\"var5\":"+ humi +"\,\"var6\":"+ Co2 +",\"var7\":24.25}";
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":3,\"var1\":" + distanceCm + ",\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
       int httpResponseCode = http.POST(httpRequestData);
       Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
