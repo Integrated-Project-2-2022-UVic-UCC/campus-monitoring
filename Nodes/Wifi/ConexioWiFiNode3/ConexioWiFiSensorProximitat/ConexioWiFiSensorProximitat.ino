@@ -94,7 +94,7 @@ void loop() {
       
       
       http.addHeader("Content-Type", "application/json");
-      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":4,\"var1\":" + distanceCm + ",\"var2\":49.54,\"var3\":84.14,\"var4\":24.25,\"var5\":49.54\,\"var6\":145.14,\"var7\":24.25}";
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":4,\"var1\":" + distanceCm + ",\"var2\":0,\"var3\":0,\"var4\":0,\"var5\":0,\"var6\":0,\"var7\":0}";
       int httpResponseCode = http.POST(httpRequestData);
       Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
@@ -109,7 +109,7 @@ void loop() {
     lastTime = millis();
   }
   
-  delay(1000);
+  delay(60000);
 }
 
 void ConexioServer(){

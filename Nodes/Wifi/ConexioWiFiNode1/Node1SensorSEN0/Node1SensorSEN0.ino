@@ -143,7 +143,7 @@ void loop() {
 
       http.begin(client, serverName);
       http.addHeader("Content-Type", "application/json");
-      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":1,\"var1\":12,\"var2\":"+ temp +",\"var3\":"+ press/1000 +",\"var4\":"+ alti +",\"var5\":"+ humi +",\"var6\":"+ CO2/1000 +",\"var7\":24.25}";
+      String httpRequestData = "{\"timestamp\":\"" + currentDate + "\",\"sensorID\":1,\"var1\":"+ temp +",\"var2\":"+ humi +",\"var3\":"+ CO2/1000 +",\"var4\":"+ alti +",\"var5\":"+ press/1000 +",\"var6\":"+ CO2/1000 +",\"var7\":0}";
       int httpResponseCode = http.POST(httpRequestData);
       Serial.println(httpRequestData);
       Serial.print("HTTP Response code: ");
@@ -156,5 +156,5 @@ void loop() {
     }
     lastTime = millis();
   }
-  delay(1000);
+  delay(60000);
 }
