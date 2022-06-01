@@ -96,7 +96,7 @@ void loop() {
   timeClient.update();
   time_t epochTime = timeClient.getEpochTime();
   String formattedTime = timeClient.getFormattedTime();
-  int currentHour = timeClient.getHours();
+  int currentHour = timeClient.getHours() + 2;
   int currentMinute = timeClient.getMinutes();
   int currentSecond = timeClient.getSeconds();
   String weekDay = weekDays[timeClient.getDay()];
